@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<!-- [Style section tetap sama seperti sebelumnya] -->
+<head>
+  <style>
+    /* Style tetap sama */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-family: Arial, sans-serif;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #4472C4;
+      color: white;
+    }
+    .header {
+      background-color: #4472C4;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .total {
+      background-color: #B4C6E7;
+      font-weight: bold;
+    }
+    input {
+      width: 70px;
+      padding: 5px;
+    }
+    .result {
+      font-weight: bold;
+      color: #1F4E78;
+    }
+    .section-header {
+      background-color: #8EA9DB;
+      color: white;
+      font-weight: bold;
+    }
+    .warning {
+      color: red;
+      font-size: 12px;
+    }
+    .score-display {
+      font-weight: bold;
+      color: #1F4E78;
+    }
+  </style>
+</head>
+<body>
+
+<!-- [HTML structure tetap sama seperti sebelumnya] -->
+<div class="header">IDEA GENERATION (Proposal, Presentasi, Video Pitching)</div>
+
+<!-- Tabel Penilaian Utama -->
+<table id="scoringTable">
+  <tr class="section-header">
+    <td colspan="7">PENILAIAN ASPEK IDEA GENERATION</td>
+  </tr>
+  <tr>
+    <th>No</th>
+    <th>Aspect</th>
+    <th>Criteria</th>
+    <th>Input Scale (1-5)</th>
+    <th>Scale Status</th>
+    <th>Weight</th>
+    <th>Score</th>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>Problem</td>
+    <td>1. The problem is clear Bring big Impact to society</td>
+    <td><input type="number" min="1" max="5" onchange="calculateScore(0, 0.20)"></td>
+    <td id="status0"></td>
+    <td>20%</td>
+    <td id="score0">0</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>Solution (Features)</td>
+    <td>
+      1. The solution that they propose is interesting<br>
+      2. Fit to the problem<br>
+      3. Uniqueness
+    </td>
+    <td><input type="number" min="1" max="5" onchange="calculateScore(1, 0.35)"></td>
+    <td id="status1"></td>
+    <td>35%</td>
+    <td id="score1">0</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>Possibility to Implement</td>
+    <td>
+      1. Regulation aspect<br>
+      2. Development time cost<br>
+      3. Product Backlog Refinement
+    </td>
+    <td><input type="number" min="1" max="5" onchange="calculateScore(2, 0.35)"></td>
+    <td id="status2"></td>
+    <td>35%</td>
+    <td id="score2">0</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>Presentation</td>
+    <td>
+      1. Time Management<br>
+      2. The presentation is engaging
+    </td>
+    <td><input type="number" min="1" max="5" onchange="calculateScore(3, 0.10)"></td>
+    <td id="status3"></td>
+    <td>10%</td>
+    <td id="score3">0</td>
+  </tr>
+  <tr class="total">
+    <td colspan="6">TOTAL POINT</td>
+    <td id="totalScore">0</td>
+  </tr>
+</table>
+
+<!-- Tabel Penilaian Komponen -->
+<table id="componentTable">
+  <tr class="section-header">
+    <td colspan="5">PENILAIAN KOMPONEN</td>
+  </tr>
+  <tr>
+    <th>Component</th>
+    <th>Range</th>
+    <th>Calculated Score</th>
+    <th>Status</th>
+    <th>Score Details</th>
+  </tr>
+  <tr>
+    <td>Proposal</td>
+    <td>1-200</td>
+    <td id="proposalScore">0</td>
+    <td id="proposalStatus"></td>
+    <td id="proposalDetails"></td>
+  </tr>
+  <tr>
+    <td>Presentasi</td>
+    <td>1-100</td>
+    <td id="presentasiScore">0</td>
+    <td id="presentasiStatus"></td>
+    <td id="presentasiDetails"></td>
+  </tr>
+  <tr>
+    <td>Video Pitching</td>
+    <td>1-100</td>
+    <td id="videoScore">0</td>
+    <td id="videoStatus"></td>
+    <td id="videoDetails"></td>
+  </tr>
+  <tr class="total">
+    <td colspan="4">TOTAL COMPONENT SCORE</td>
+    <td id="totalComponentScore">0</td>
+  </tr>
+</table>
+
+<script>
+function calculateScore(index, weight) {
+  const input = document.querySelectorAll('#scoringTable input')[index];
+  const value = parseInt(input.value);
+  const statusCell = document.getElementById(`status${index}`);
+  const scoreCell = document.getElementById(`score${index}`);
+  
+  if (value < 1 || value > 5) {
+    statusCell.textContent = 'Invalid Input';
+    scoreCell.textContent = '0';
+    return;
+  }
+  
+  // Perbaikan logika status untuk mencakup nilai 3
+  let status;
+  switch(value) {
+    case 5: status = 'Perfect'; break;
+    case 4: status = 'Good'; break;
+    case 3: status = 'Good'; break;  // Menambahkan status untuk nilai 3
+    case 2: status = 'Bad'; break;
+    case 1: status = 'Worst'; break;
+    case 0: status = 'Null'; break;
+    default: status = 'Invalid Input';
+  }
+  statusCell.textContent = status;
+  
+  const score = value * weight;
+  scoreCell.textContent = score.toFixed(2);
+  
+  calculateTotal();
+}
+
+function calculateTotal() {
+  const scores = Array.from(document.querySelectorAll('[id^="score"]'))
+    .filter(el => el.id !== 'totalScore' && !el.id.includes('Component'))
+    .map(el => parseFloat(el.textContent) || 0);
+    
+  const total = scores.reduce((sum, score) => sum + score, 0);
+  document.getElementById('totalScore').textContent = total.toFixed(2);
+  
+  calculateComponentScores(total);
+}
+
+function calculateComponentScores(totalPoint) {
+  const percentageScore = (totalPoint / 5) * 100;
+  
+  const proposalScore = Math.round((percentageScore / 100) * 200);
+  const presentasiScore = Math.round(percentageScore);
+  const videoScore = Math.round(percentageScore);
+  
+  updateComponentDisplay('proposal', proposalScore, 200);
+  updateComponentDisplay('presentasi', presentasiScore, 100);
+  updateComponentDisplay('video', videoScore, 100);
+  
+  const totalComponentScore = proposalScore + presentasiScore + videoScore;
+  document.getElementById('totalComponentScore').textContent = totalComponentScore;
+}
+
+function updateComponentDisplay(component, score, maxScore) {
+  const scoreElement = document.getElementById(`${component}Score`);
+  const statusElement = document.getElementById(`${component}Status`);
+  const detailsElement = document.getElementById(`${component}Details`);
+  
+  scoreElement.textContent = score;
+  
+  const percentage = (score / maxScore) * 100;
+  let status;
+  
+  if (percentage >= 80) status = 'Excellent';
+  else if (percentage >= 60) status = 'Good';
+  else if (percentage >= 40) status = 'Fair';
+  else status = 'Poor';
+  
+  statusElement.textContent = status;
+  detailsElement.textContent = `${percentage.toFixed(1)}% of max ${maxScore}`;
+}
+</script>
+
+</body>
+</html>
